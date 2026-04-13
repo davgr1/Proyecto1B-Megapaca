@@ -3,34 +3,37 @@ import crypto from "crypto"; //Generar codigo aleatorio
 import jsonwebtoken from "jsonwebtoken"; // Token
 import bcryptjs from "bcryptjs"; //Encriptar
  
-import customerModel from "../models/customers.js";
+import employeesModel from "../models/employees.js";
  
 import {config} from "../../config.js";
  
 //array de funciones
-const registerCustomerController = {};
+const registerEmployeerController = {};
  
-registerCustomerController.register = async (req, res) => {
+registerEmployeerController.register = async (req, res) => {
   //#1- Solicitar los datos
   const {
     name,
     lastName,
-    birthdate,
+    salary,
+    DUI,
+    phone,
     email,
-    password,
-    isVerified
+    Password,
+    idBranches,
+    isVerify
   } = req.body;
  
   try {
  
     //Validar que el correo no exista en la base de datos
-    const existsCustomer = await  customerModel.findOne({email});
-    if (existsCustomer){
-      return res.status(400).json({message: "Customer already exist"})
+    const existsEmployees = await  employeesModel.findOne({email});
+    if (existsEmployees){
+      return res.status(400).json({message: "Employees already exist"})
     }
  
     //  Encriptar la contraseña
-    const passwordHased = await bcryptjs.hash(password, 10)
+    const passwordHased = await bcryptjs.hash(Password, 10)
  
     //Generar un codigo aleatorio
     const randomNumber = crypto.randomBytes(3).toString("hex")
@@ -38,13 +41,16 @@ registerCustomerController.register = async (req, res) => {
     //Guardamos en un token la informacion
     const token = jsonwebtoken.sign(
       //#1- ¿Que vamos a guardar?
-      {randomNumber,
-      name,
-      lastName,
-      birthdate,
-      email,
-      password: passwordHased,
-      isVerified
+      { randomNumber,
+        name,
+        lastName,
+        salary,
+        DUI,
+        phone,
+        email,
+        Password: passwordHased,
+        idBranches,
+        isVerify,
     },
  
       //#2-Secret key
@@ -67,10 +73,10 @@ registerCustomerController.register = async (req, res) => {
  
     //#2- MailOption -> ¿?Quine lo recibe y como
       const mailOptions ={
-        from: config .email.user_email,
+        from: config.email.user_email,
         to: email,
         subject: "Verificacion de cuenta",
-        text: "Para verificar tu cuenta, utiliza este codigo" + randomNumber + "Expira en 15 minutos"
+        text: "Para verificar tu cuenta, utiliza este codigo: " + randomNumber + " Expira en 15 minutos"
       }
  
     //#3- Enviar el correo
@@ -90,7 +96,7 @@ registerCustomerController.register = async (req, res) => {
  
 //Verificar el codigo que acabamos de enviar
  
-registerCustomerController.verifyCode = async (req, res) => {
+registerEmployeerController.verifyCode = async (req, res) => {
   try {
     //Solicitamos el codigo que escribieron en el frontend
     const {verificationCodeRequest} = req.body
@@ -102,12 +108,15 @@ registerCustomerController.verifyCode = async (req, res) => {
     const decoced = jsonwebtoken.verify(token, config.JWT.secret);
     const {
       randomNumber: storedCode,
-      name,
-      lastName,
-      birthdate,
-      email,
-      password,
-      isVerified,
+        name,
+        lastName,
+        salary,
+        DUI,
+        phone,
+        email,
+        Password,
+        idBranches,
+        isVerify,
     } = decoced;
  
     //Comparar lo que el usuario escribio con el codigo esta en el token
@@ -116,20 +125,23 @@ registerCustomerController.verifyCode = async (req, res) => {
     }
  
     //Si todo esta bien y el usuario escribe el codigolo registramos en la base de datos
-    const NewCustomer = new customerModel({
+    const NewEmployees = new employeesModel({
       name,
       lastName,
-      birthdate,
-      email,
-      password,
-      isVerified: true,
+      salary,
+      DUI,
+      phone,
+      email,  
+      Password,
+      idBranches,
+      isVerify: true,
     });
  
-    await NewCustomer.save();
+    await NewEmployees.save();
  
     res.clearCookie("RegistrarionCookie")
  
-    return res.status(200).json({message: "Customer register"})
+    return res.status(200).json({message: "Employees register"})
  
   } catch (error) {
     console.log("error"+error)
@@ -137,4 +149,4 @@ registerCustomerController.verifyCode = async (req, res) => {
   }
 };
  
-export default registerCustomerController;
+export default registerEmployeerController;

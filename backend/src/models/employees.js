@@ -39,6 +39,9 @@ const employeeSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Branches",
     },
+    isVerify: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,
