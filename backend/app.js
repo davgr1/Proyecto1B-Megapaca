@@ -4,7 +4,7 @@ import branchesRoutes from "./src/routes/branches.js";
 import employeesRoutes from "./src/routes/employees.js";
 import customerRoutes from "./src/routes/customer.js";
 import registerCustomerRoutes from "./src/routes/registerCustomer.js";
-import registerEmployeerRoutes from "./src/routes/registerEmployeer.js";
+import loginCustomerRoutes from "./src/routes/login.js";
 import cookieParser from "cookie-parser";
 //Creo una constante que guarde Express
 const app = express();
@@ -18,6 +18,6 @@ app.use("/api/branches", branchesRoutes);
 app.use("/api/employees", employeesRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/registerCustomer", registerCustomerRoutes);
-app.use("/api/registerEmployeer", registerEmployeerRoutes);
+app.use("/api/loginCustomer", loginCustomerRoutes);
 
 export default app;
