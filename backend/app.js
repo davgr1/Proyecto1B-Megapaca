@@ -6,6 +6,7 @@ import customerRoutes from "./src/routes/customer.js";
 import registerCustomerRoutes from "./src/routes/registerCustomer.js";
 import loginCustomerRoutes from "./src/routes/login.js";
 import logoutRoutes from "./src/routes/logout.js";
+import recoveryPasswordRoutes from "./src/routes/recoveryPassword.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 //Creo una constante que guarde Express
@@ -15,7 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ["http://localhost5173", "localhost5174"],
+    origin: ["http://localhost5173", "http://localhost5174"],
     //permiri el envio de cookies y credenales
     credentials: true,
 }),
@@ -28,5 +29,6 @@ app.use("/api/customers", customerRoutes);
 app.use("/api/registerCustomer", registerCustomerRoutes);
 app.use("/api/loginCustomer", loginCustomerRoutes);
 app.use("/api/logout", logoutRoutes);
+app.use("/api/recoveryPassword", recoveryPasswordRoutes);
 
 export default app;
