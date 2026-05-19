@@ -48,4 +48,88 @@ productsController.updateProducts = async (req, res) => {
   res.json({ message: "product updated" });
 };
 
+//select por id
+productsController.getProductById = async (req, res) => {
+  try {
+    const producto = await productsModel.findById(req.params.id)
+    if(!producto){
+      return res.status(404).json({message: "product not found"})
+    }
+    return res.status(200).json(producto);
+  } catch (error) {
+    console.log("error" + error)
+    return res.status(500).json({message: "internal server error"})
+  }
+};
+
+//select de productos con stock bajos
+productsController.getLowStock = async (req, res) => {
+  try {
+    const productos = await productsModel.find({stock: {$lt: 5}})
+
+    if(!productos){
+      return res.status(404).json({message: "there are not product whit low stock"})
+    }
+
+    return res.status(200).json(productos);
+  } catch (error) {
+    console.log("error" + error)
+    return res.status(500).json({message: "internal server error"})
+  }
+};
+
+//select con diltro
+productsController.getProductsByPriceRange = async (req, res) => {
+  try {
+    //solicitar datos
+    const {min, max} = req.body;
+
+    const products = await productsModel.find({
+      price: {$gte: min, $lte: max}
+    })
+
+    if(!products){
+      return res.status(404).json({message: "not product with this price range"})
+    }
+
+    return res.status(200).json(products)
+  } catch (error) {
+    console.log("error" + error)
+    return res.status(500).json({message: "internal server error"})
+  }
+};
+
+//contar cuantos elementos hay en una colecion
+productsController.countProduct = async (req, res) => {
+  try {
+    const count = await productsModel.countDocuments();
+
+    return res.status(200).json(count)
+  } catch (error) {
+    console.log("error" + error)
+    return res.status(500).json({message: "internal server error"})
+  }
+};
+
+//buscar por nombre
+productsController.searchByName = async (req, res) => {
+  try {
+    //nombre a buscar
+    const { name } = req.body;
+
+    const products = await productsModel.find({
+      name: {$regex: name, $options: "i"}
+    })
+
+    if(!products){
+      return res.status(404).json({message: "not product found"})
+    }
+
+    return res.status(200).json(products)
+  } catch (error) {
+    console.log("error" + error)
+    return res.status(500).json({message: "internal server error"})
+  }
+};
+
 export default productsController;
